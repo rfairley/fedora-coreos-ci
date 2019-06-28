@@ -224,7 +224,7 @@ objects:
         imageChange:
           from:
             kind: ImageStreamTag
-            name: coreos-assembler:master
+            name: quay.io/coreos-assembler/coreos-assembler:master
       source:
         type: Git
         git:
@@ -255,7 +255,7 @@ objects:
         imageChange:
           from:
             kind: ImageStreamTag
-            name: coreos-assembler:master
+            name: quay.io/coreos-assembler/coreos-assembler:master
       source:
         type: Git
         git:

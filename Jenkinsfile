@@ -50,11 +50,8 @@ properties([
 currentBuild.description = "[${params.STREAM}] Running"
 
 // substitute the right COSA image into the pod definition before spawning it
-if (official) {
-    pod = pod.replace("COREOS_ASSEMBLER_IMAGE", "coreos-assembler:master")
-} else {
-    pod = pod.replace("COREOS_ASSEMBLER_IMAGE", "${developer_prefix}-coreos-assembler:master")
-}
+
+pod = pod.replace("COREOS_ASSEMBLER_IMAGE", "coreos-assembler:master")
 
 podTemplate(cloud: 'openshift', label: 'coreos-assembler', yaml: pod, defaultContainer: 'jnlp') {
     node('coreos-assembler') { container('coreos-assembler') {
