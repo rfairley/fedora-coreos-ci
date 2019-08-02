@@ -285,7 +285,9 @@ podTemplate(cloud: 'openshift', label: 'coreos-assembler', yaml: pod, defaultCon
         }
 
         post {
-          echo "In post"
+            always {
+                echo "In post"
+            }
             success {
                 withCredentials([string(credentialsId: 'fedora-coreos-slacktoken', variable: 'SLACK_TOKEN')]) {
                     utils.shwrap("""
