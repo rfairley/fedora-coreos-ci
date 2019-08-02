@@ -111,6 +111,14 @@ podTemplate(cloud: 'openshift', label: 'coreos-assembler', yaml: pod, defaultCon
         }
 
         stage('Fetch') {
+            withCredentials([file(credentialsId: 'fedora-coreos-slacktoken', variable: 'SLACK_TOKEN')]) {
+                utils.shwrap("""
+                echo "Build TEST"
+                curl -X POST -H "Content-Type: application/json" \
+                  -d '{"text":"'"JOB_NAME"' - #'"BUILD_NUMBER"' Failed on '"GIT_BRANCH"' branch - '"BUILD_URL"'-TEST"}' \
+                  "https://rfairleyfcosj-qmo8543.slack.com/services/hooks/jenkins-ci?token=${SLACK_TOKEN}"
+                """)
+            }
             if (s3_stream_dir) {
                 utils.shwrap("""
                 coreos-assembler buildprep s3://${s3_stream_dir}/builds
@@ -273,6 +281,30 @@ podTemplate(cloud: 'openshift', label: 'coreos-assembler', yaml: pod, defaultCon
                     -e STREAM=${params.STREAM} \
                     -e VERSION=${newBuildID}
                 """)
+            }
+        }
+
+        post {
+          echo "In post"
+            success {
+                withCredentials([file(credentialsId: 'fedora-coreos-slacktoken', variable: 'SLACK_TOKEN')]) {
+                    utils.shwrap("""
+                    echo "Build success"
+                    curl -X POST -H "Content-Type: application/json" \
+                      -d '{"text":"'"JOB_NAME"' - #'"BUILD_NUMBER"' Failed on '"GIT_BRANCH"' branch - '"BUILD_URL"'-SUCCESS"}' \
+                      "https://rfairleyfcosj-qmo8543.slack.com/services/hooks/jenkins-ci?token=${SLACK_TOKEN}"
+                    """)
+                }
+            }
+            failure {
+              withCredentials([file(credentialsId: 'fedora-coreos-slacktoken', variable: 'SLACK_TOKEN')]) {
+                  utils.shwrap("""
+                    echo "Build failure"
+                    curl -X POST -H "Content-Type: application/json" \
+                      -d '{"text":"'"JOB_NAME"' - #'"BUILD_NUMBER"' Failed on '"GIT_BRANCH"' branch - '"BUILD_URL"'-FAILURE"}' \
+                      "https://rfairleyfcosj-qmo8543.slack.com/services/hooks/jenkins-ci?token=${SLACK_TOKEN}"
+                    """)
+              }
             }
         }
     }}
