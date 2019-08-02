@@ -111,7 +111,7 @@ podTemplate(cloud: 'openshift', label: 'coreos-assembler', yaml: pod, defaultCon
         }
 
         stage('Fetch') {
-            withCredentials([string(credentialsId: 'fedora-coreos-slacktoken', variable: 'SLACK_TOKEN')]) {
+            withCredentials([file(credentialsId: 'fedora-coreos-slacktoken', variable: 'SLACK_TOKEN')]) {
                 utils.shwrap("""
                 echo "Build TEST"
                 curl -X POST -H "Content-Type: application/json" \
@@ -289,7 +289,7 @@ podTemplate(cloud: 'openshift', label: 'coreos-assembler', yaml: pod, defaultCon
                 echo "In post"
             }
             success {
-                withCredentials([string(credentialsId: 'fedora-coreos-slacktoken', variable: 'SLACK_TOKEN')]) {
+                withCredentials([file(credentialsId: 'fedora-coreos-slacktoken', variable: 'SLACK_TOKEN')]) {
                     utils.shwrap("""
                     echo "Build success"
                     curl -X POST -H "Content-Type: application/json" \
@@ -299,7 +299,7 @@ podTemplate(cloud: 'openshift', label: 'coreos-assembler', yaml: pod, defaultCon
                 }
             }
             failure {
-              withCredentials([string(credentialsId: 'fedora-coreos-slacktoken', variable: 'SLACK_TOKEN')]) {
+              withCredentials([file(credentialsId: 'fedora-coreos-slacktoken', variable: 'SLACK_TOKEN')]) {
                   utils.shwrap("""
                     echo "Build failure"
                     curl -X POST -H "Content-Type: application/json" \
